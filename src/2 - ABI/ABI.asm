@@ -97,14 +97,68 @@ alternate_sum_4_using_c_alternative:
 
 
 ; uint32_t alternate_sum_8(uint32_t x1, uint32_t x2, uint32_t x3, uint32_t x4, uint32_t x5, uint32_t x6, uint32_t x7, uint32_t x8);
-; registros y pila: x1[?], x2[?], x3[?], x4[?], x5[?], x6[?], x7[?], x8[?]
+; registros y pila: x1[RDI], x2[RSI], x3[RDX], x4[RCX], x5[R8], x6[R9], x7[RBP + 16], x8[RBP + 24]
 alternate_sum_8:
 	;prologo
+  push RBP ;pila alineada
+  mov RBP, RSP ;stack frame armado
 
-	; COMPLETAR
+  push R12 ;Preservo valor viejo de R12 en stack; RSP = RBP - 8
+  mov R12, RDX ;R12 = x3
+
+  push R13 ;Preservo valor viejo de R13 en stack; RSP = RBP - 16
+  mov R13, RCX ;R13 = x4
+
+  push R14 ;Preservo valor viejo de R14 en stack; RSP = RBP - 24
+  mov R14, R8 ;R14 = x5
+
+  push R15 ;Preservo valor viejo de R15 en stack; RSP = RBP - 32
+  mov R15, R9 ;R15 = x6
+
+  ;EDI = x1
+  ;ESI = x2
+  call restar_c
+  ;EAX = x1 - x2
+
+  mov EDI, EAX ;EDI = x1 - x2
+  mov ESI, R12D ;ESI = x3
+  call sumar_c
+  ;EAX = x1 - x2 + x3
+
+  mov EDI, EAX ;EDI = x1 - x2 + x3
+  mov ESI, R13D ;ESI = x4
+  call restar_c
+  ;EAX = x1 - x2 + x3 - x4
+
+  mov EDI, EAX ;EDI = x1 - x2 + x3 - x4
+  mov ESI, R14D ;ESI = x5
+  call sumar_c
+  ;EAX = x1 - x2 + x3 - x4 + x5
+
+  mov EDI, EAX ;EDI =  x1 - x2 + x3 - x4 + x5
+  mov ESI, R15D ;ESI = x6
+  call restar_c
+  ;EAX = x1 - x2 + x3 - x4 + x5 - x6
+
+  mov EDI, EAX ;EDI = x1 - x2 + x3 - x4 + x5 - x6
+  mov ESI, DWORD [RBP + 16] ;ESI = x7 ??? SII!!
+  call sumar_c
+  ;EAX = x1 - x2 + x3 - x4 + x5 - x6 + x7
+  
+  mov EDI, EAX ;EDI = x1 - x2 + x3 - x4 + x5 - x6 + x7
+  mov ESI, DWORD [RBP + 24] ;ESI = x8
+  call restar_c
+  ;EAX = x1 - x2 + x3 - x4 + x5 - x6 + x7 - x8
+  
+  pop R15 ;Recupero registro no-volatil; RSP = RBP - 24
+  pop R14 ;RSP = RBP - 16
+  pop R13 ;RSP = RBP - 8
+  pop R12 ;RSP = RBP
 
 	;epilogo
-	ret
+  pop RBP ;Recuperar base pointer de funcion llamadora; desalinea
+	ret ; Popea RIP y -8 a RSP
+
 
 
 ; SUGERENCIA: investigar uso de instrucciones para convertir enteros a floats y viceversa
