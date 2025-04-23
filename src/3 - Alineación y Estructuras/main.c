@@ -1,13 +1,57 @@
+#include <assert.h>
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <ctype.h>
 #include <string.h>
-#include <assert.h>
 
 #include "../test-utils.h"
 #include "Estructuras.h"
 
+uint32_t c_elem(lista_t *lista);
+lista_t crear_lista(uint32_t cant_elems);
+
 int main() {
-	/* Acá pueden realizar sus propias pruebas */
-	return 0;
+
+  lista_t lista = crear_lista(10);
+
+  uint32_t res = c_elem(&lista);
+  printf("Contando en C: %d\n", res);
+
+  res = cantidad_total_de_elementos(&lista);
+  printf("Contando en ASM: %d\n", res);
+
+  /* Acá pueden realizar sus propias pruebas */
+  return 0;
+}
+
+uint32_t c_elem(lista_t *lista) {
+  uint32_t total = 0;
+
+  nodo_t *nodo = lista->head;
+
+  while (nodo != NULL) {
+    total += nodo->longitud;
+    nodo = nodo->next;
+  }
+
+  return total;
+}
+
+lista_t crear_lista(uint32_t cant_elems) {
+  nodo_t *array[cant_elems];
+
+  for (uint32_t i = 0; i < cant_elems; i++) {
+    array[i] = malloc(sizeof(nodo_t));
+    array[i]->categoria = 'A';
+    array[i]->longitud = cant_elems;
+  }
+
+  for (uint32_t i = 0; i < cant_elems - 1; i++) {
+    array[i]->next = array[i + 1];
+  }
+
+  lista_t lista;
+  lista.head = array[0];
+
+  return lista;
 }
