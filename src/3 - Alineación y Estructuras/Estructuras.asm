@@ -36,7 +36,7 @@ cantidad_total_de_elementos:
   mov rbp, rsp ; stack frame armado
 
   mov eax, 0x0 ; inicializo contador en cero
-  mov rsi, QWORD [rdi] ; rsi = lista.head (primer nodo)
+  mov rsi, QWORD [rdi] ; rsi = lista.head (puntero a primer nodo)
 
   cmp rsi, 0x0 ; Si la lista está vacía, rsi == 0
   je fin
@@ -56,5 +56,25 @@ fin:
 ;extern uint32_t cantidad_total_de_elementos_packed(packed_lista_t* lista);
 ;registros: lista[?]
 cantidad_total_de_elementos_packed:
+	; prologo
+	push rbp ; pila alineada
+	mov rbp, rsp ; stack frame armado
+
+	mov eax, 0x0 ; inicializo contador en cero
+	mov rsi, QWORD [rdi] ; rsi = lista.head (puntero a primer nodo)
+
+	cmp rsi, 0x0 ; si la lista está vacía, rsi == 0
+	je packed_fin
+
+packed_cuenta:
+	add eax, DWORD [rsi + PACKED_NODO_OFFSET_LONGITUD]
+
+	mov rsi, QWORD [rsi + PACKED_NODO_OFFSET_NEXT] ; puntero a siguiente elemento
+	cmp rsi, 0x0 ; nodo.next != NULL, seguir acumulando
+	jne packed_cuenta
+
+packed_fin:
+	; epilogo
+	pop rbp
 	ret
 
