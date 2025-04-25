@@ -4,6 +4,7 @@ extern fprintf
 
 CHAR_SIZE EQU 1
 END_CHAR EQU 0
+null_string: db 'NULL', 0
 
 section .data
 
@@ -113,8 +114,27 @@ strDelete:
   pop rbp
 	ret
 
-; void strPrint(char* a, FILE* pFile)
+; void strPrint(char* a [rdi], FILE* pFile [rsi])
 strPrint:
+	; prologo
+	push rbp
+	mov rbp, rsp
+
+	mov cl, BYTE [rdi]
+	cmp cl, END_CHAR
+	jne strPrint_not_null_string
+
+	mov rdi, null_string
+
+strPrint_not_null_string:
+	mov rdx, rsi
+	mov rsi, rdi
+	mov rdi, rdx
+
+	call fprintf
+
+	; epilogo
+	pop rbp
 	ret
 
 ; uint32_t strLen(char* a[rdi])

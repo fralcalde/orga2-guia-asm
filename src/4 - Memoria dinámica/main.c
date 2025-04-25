@@ -22,5 +22,12 @@ int main() {
 
   // strDelete(str); // No funciona porque str está en el stack. No en el heap.
   // Debe ser un puntero creado por malloc
+	
+	char *strP = "";
+	FILE *filePointer;
+	filePointer = fopen("strPrint.txt", "w");
+	strPrint(strP, filePointer);
+	int res = fclose(filePointer);
+	printf("res: %d\n", res);
   return 0;
 }
