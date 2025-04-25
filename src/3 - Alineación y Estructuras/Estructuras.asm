@@ -54,7 +54,7 @@ fin:
 	ret
 
 ;extern uint32_t cantidad_total_de_elementos_packed(packed_lista_t* lista);
-;registros: lista[?]
+;registros: lista[rdi]
 cantidad_total_de_elementos_packed:
 	; prologo
 	push rbp ; pila alineada
